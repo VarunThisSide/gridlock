@@ -7,7 +7,7 @@
       "lat": 12.9788,
       "lon": 77.5996
     },
-    "impact_radius": 3000
+    "impact_radius": 30000
   },
 
   "risk_analysis": {
@@ -18,72 +18,6 @@
   },
 
   "junctions": [
-  {
-    "id": "J1",
-    "name": "Queens Statue Circle",
-    "lat": 12.9785,
-    "lon": 77.5992,
-    "risk_score": 0.89,
-    "risk_level": "Critical"
-  },
-  {
-    "id": "J2",
-    "name": "MG Road Junction",
-    "lat": 12.9754,
-    "lon": 77.6032,
-    "risk_score": 0.83,
-    "risk_level": "Critical"
-  },
-  {
-    "id": "J3",
-    "name": "Cubbon Road Junction",
-    "lat": 12.9806,
-    "lon": 77.6028,
-    "risk_score": 0.78,
-    "risk_level": "Critical"
-  },
-
-  {
-    "id": "J4",
-    "name": "Brigade Road",
-    "lat": 12.9718,
-    "lon": 77.6055,
-    "risk_score": 0.68,
-    "risk_level": "High"
-  },
-  {
-    "id": "J5",
-    "name": "Church Street",
-    "lat": 12.9742,
-    "lon": 77.6072,
-    "risk_score": 0.63,
-    "risk_level": "High"
-  },
-  {
-    "id": "J6",
-    "name": "Residency Road",
-    "lat": 12.9725,
-    "lon": 77.6008,
-    "risk_score": 0.59,
-    "risk_level": "High"
-  },
-  {
-    "id": "J7",
-    "name": "Anil Kumble Circle",
-    "lat": 12.9818,
-    "lon": 77.6012,
-    "risk_score": 0.56,
-    "risk_level": "High"
-  },
-
-  {
-    "id": "J8",
-    "name": "Richmond Circle",
-    "lat": 12.9688,
-    "lon": 77.5995,
-    "risk_score": 0.45,
-    "risk_level": "Moderate"
-  },
   {
     "id": "J9",
     "name": "Lavelle Road",
@@ -152,37 +86,6 @@
   "deployment": {
   "officers": [
     {
-      "id": "P1",
-      "lat": 12.9785,
-      "lon": 77.5992,
-      "count": 15
-    },
-    {
-      "id": "P2",
-      "lat": 12.9754,
-      "lon": 77.6032,
-      "count": 12
-    },
-    {
-      "id": "P3",
-      "lat": 12.9806,
-      "lon": 77.6028,
-      "count": 12
-    },
-
-    {
-      "id": "P4",
-      "lat": 12.9718,
-      "lon": 77.6055,
-      "count": 10
-    },
-    {
-      "id": "P5",
-      "lat": 12.9742,
-      "lon": 77.6072,
-      "count": 8
-    },
-    {
       "id": "P6",
       "lat": 12.9725,
       "lon": 77.6008,
@@ -204,24 +107,7 @@
   ],
 
   "barricades": [
-    {
-      "id": "B1",
-      "lat": 12.9789,
-      "lon": 77.5997,
-      "reason": "Critical Junction Closure"
-    },
-    {
-      "id": "B2",
-      "lat": 12.9758,
-      "lon": 77.6035,
-      "reason": "Traffic Diversion"
-    },
-    {
-      "id": "B3",
-      "lat": 12.9804,
-      "lon": 77.6025,
-      "reason": "Critical Junction Closure"
-    },
+ 
     {
       "id": "B4",
       "lat": 12.9722,
@@ -238,30 +124,15 @@
 },
   "infrastructure": {
     "hospitals": [
-      {
-        "id": "H1",
-        "name": "Victoria Hospital",
-        "lat": 12.9630,
-        "lon": 77.5730
-      }
+      
     ],
 
     "schools": [
-      {
-        "id": "S1",
-        "name": "St Joseph School",
-        "lat": 12.9812,
-        "lon": 77.6041
-      }
+      
     ],
 
     "fire_stations": [
-      {
-        "id": "F1",
-        "name": "Central Fire Station",
-        "lat": 12.9740,
-        "lon": 77.5920
-      }
+      
     ],
 
     "police_stations": [
@@ -275,46 +146,9 @@
   },
 
  "diversions": [
-  {
-    "id": "D1",
-    "affected_junction": "Queens Statue Circle",
 
-    "blocked_route": [
-      [12.9785, 77.5992],
-      [12.9790, 77.6000],
-      [12.9798, 77.6008]
-    ],
 
-    "alternate_route": [
-      [12.9785, 77.5992],
-      [12.9778, 77.5984],
-      [12.9770, 77.5978],
-      [12.9768, 77.6000],
-      [12.9785, 77.6030],
-      [12.9805, 77.6045],
-      [12.9798, 77.6008]
-    ]
-  },
-
-  {
-    "id": "D2",
-    "affected_junction": "MG Road Junction",
-
-    "blocked_route": [
-      [12.9754, 77.6032],
-      [12.9760, 77.6040],
-      [12.9768, 77.6050]
-    ],
-
-    "alternate_route": [
-      [12.9754, 77.6032],
-      [12.9735, 77.6020],
-      [12.9720, 77.6030],
-      [12.9725, 77.6050],
-      [12.9745, 77.6065],
-      [12.9768, 77.6050]
-    ]
-  },
+  
 
   {
     "id": "D3",
@@ -338,16 +172,7 @@
 ],
 
   "emergency_corridors": [
-  {
-    "id": "EC1",
-    "name": "Bowring Hospital Emergency Corridor",
-    "route": [
-      [12.9830, 77.6035],
-      [12.9825, 77.6028],
-      [12.9810, 77.6015],
-      [12.9788, 77.5996]
-    ]
-  },
+
 
   {
     "id": "EC2",
@@ -362,14 +187,6 @@
 ],
 
   "alerts": [
-  {
-    "severity": "Critical",
-    "message": "Queens Statue Circle congestion probability exceeds 85%."
-  },
-  {
-    "severity": "Critical",
-    "message": "MG Road Junction approaching gridlock conditions."
-  },
   {
     "severity": "High",
     "message": "Heavy pedestrian spillover expected near Brigade Road after match completion."

@@ -1,6 +1,9 @@
 import streamlit as st
 from datetime import date
 import pandas as pd
+import json
+import os
+from datetime import datetime
 
 # Import the custom engine
 from modules.routing_engine import RoutingEngine
@@ -17,6 +20,27 @@ def get_engine():
     return RoutingEngine("datasets/givenData.csv")
 
 engine = get_engine()
+
+def save_event(event_data):
+    file_path = "./datasets/events.json"
+
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    # Load existing events
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, "r") as f:
+                events = json.load(f)
+        except:
+            events = []
+    else:
+        events = []
+
+    events.append(event_data)
+
+    with open(file_path, "w") as f:
+        json.dump(events, f, indent=4)
+
 all_nodes_dict = engine.get_all_nodes_dict()
 
 st.title("📅 Event Planner")
@@ -115,47 +139,81 @@ if event_type in route_based_events:
                     st.rerun()
 
     st.divider()
-    if st.button("🚀 Process Dynamic Route Map", type="primary", use_container_width=True):
-        if len(st.session_state.route_path) > 1:
-            st.subheader("🤖 FlowGuard AI Route Detour Generation")
-            
-            with st.spinner("Traversing city adjacency graph to compute bypass corridor..."):
-                is_wknd = pd.to_datetime(event_date).dayofweek >= 5
-                hr_val = event_time.hour
-                
-                # Call the new BFS Routing Engine
-                detour = engine.get_route_diversions(st.session_state.route_path, hr_val, is_wknd)
-                
-                if detour['status'] == 'success':
-                    st.success(f"✅ **Continuous Bypass Route Secured!** (Avg Path Health: {detour['avg_health']:.2f})")
-                    
-                    with st.container(border=True):
-                        st.markdown("### 🗺️ Recommended Bypass Stream")
-                        for idx, step in enumerate(detour['path']):
-                            if idx == 0:
-                                st.write(f"🏁 **Divert From:** {step['junction']} ({step['corridor']})")
-                            elif idx == len(detour['path']) - 1:
-                                st.write(f"🏁 **Rejoin At:** {step['junction']} ({step['corridor']})")
-                            else:
-                                st.write(f" ↪️ **Detour Via:** {step['junction']} *(Health: {step['health']:.2f})*")
-                else:
-                    st.warning("⚠️ **Graph Disconnect:** Could not find a continuous alternate path avoiding the blocked zone in the historical dataset.")
-                    st.info("Here are the clearest standalone fallback junctions near the origin:")
-                    for idx, row in detour['nodes'].iterrows():
-                         st.write(f"👉 **{row['junction'].replace('_', ' ')}** *(Score: {row['health']:.2f})*")
-                         
-            # JSON Payload Submission
+    save_col, diversion_col = st.columns(2)
+
+    with save_col:
+        if st.button("💾 Save Event", use_container_width=True):
+
             payload = {
+                "id": datetime.now().strftime("%Y%m%d%H%M%S"),
                 "event_type": event_type,
                 "event_date": str(event_date),
                 "event_time": str(event_time),
-                "attendance_matrix": expected_attendance,
-                "vector_trail": [all_nodes_dict[n] for n in st.session_state.route_path]
+                "attendance": expected_attendance,
+                "route": [all_nodes_dict[n] for n in st.session_state.route_path],
+                "status": "planned"
             }
-            with st.expander("⚙️ View JSON Payload"):
-                st.json(payload)
-        else:
-            st.warning("You must build an active segment matrix (at least 2 nodes) before evaluating pipeline deployment.")
+
+            save_event(payload)
+
+            st.success("✅ Event saved successfully.")
+
+    with diversion_col:
+        if st.button("🚧 Generate Diversion Plan",
+                    type="primary",
+                    use_container_width=True):
+            if len(st.session_state.route_path) > 1:
+                payload = {
+                    "id": datetime.now().strftime("%Y%m%d%H%M%S"),
+                    "event_type": event_type,
+                    "event_date": str(event_date),
+                    "event_time": str(event_time),
+                    "attendance": expected_attendance,
+                    "route": [all_nodes_dict[n] for n in st.session_state.route_path],
+                    "status": "planned"
+                }
+
+                save_event(payload)
+
+                st.subheader("🤖 FlowGuard AI Route Detour Generation")
+                
+                with st.spinner("Traversing city adjacency graph to compute bypass corridor..."):
+                    is_wknd = pd.to_datetime(event_date).dayofweek >= 5
+                    hr_val = event_time.hour
+                    
+                    # Call the new BFS Routing Engine
+                    detour = engine.get_route_diversions(st.session_state.route_path, hr_val, is_wknd)
+                    
+                    if detour['status'] == 'success':
+                        st.success(f"✅ **Continuous Bypass Route Secured!** (Avg Path Health: {detour['avg_health']:.2f})")
+                        
+                        with st.container(border=True):
+                            st.markdown("### 🗺️ Recommended Bypass Stream")
+                            for idx, step in enumerate(detour['path']):
+                                if idx == 0:
+                                    st.write(f"🏁 **Divert From:** {step['junction']} ({step['corridor']})")
+                                elif idx == len(detour['path']) - 1:
+                                    st.write(f"🏁 **Rejoin At:** {step['junction']} ({step['corridor']})")
+                                else:
+                                    st.write(f" ↪️ **Detour Via:** {step['junction']} *(Health: {step['health']:.2f})*")
+                    else:
+                        st.warning("⚠️ **Graph Disconnect:** Could not find a continuous alternate path avoiding the blocked zone in the historical dataset.")
+                        st.info("Here are the clearest standalone fallback junctions near the origin:")
+                        for idx, row in detour['nodes'].iterrows():
+                            st.write(f"👉 **{row['junction'].replace('_', ' ')}** *(Score: {row['health']:.2f})*")
+                            
+                # JSON Payload Submission
+                payload = {
+                    "event_type": event_type,
+                    "event_date": str(event_date),
+                    "event_time": str(event_time),
+                    "attendance_matrix": expected_attendance,
+                    "vector_trail": [all_nodes_dict[n] for n in st.session_state.route_path]
+                }
+                with st.expander("⚙️ View JSON Payload"):
+                    st.json(payload)
+            else:
+                st.warning("You must build an active segment matrix (at least 2 nodes) before evaluating pipeline deployment.")
 
 else:
     # --- SINGLE POINT EVENT ---
@@ -169,37 +227,63 @@ else:
 
     st.divider()
     
-    if st.button("Generate Deployment Plan", type="primary", use_container_width=True):
-        
-        st.subheader(" FlowGuard AI Recommendations")
-        with st.spinner("Calculating spatial diversions..."):
-            is_wknd = pd.to_datetime(event_date).dayofweek >= 5
-            hr_val = event_time.hour
-            
-            # Run Health Score Logic
-            recs = engine.get_single_point_diversions(event_location, hr_val, is_wknd)
-            
-            with st.container(border=True):
-                if len(recs) >= 2:
-                    best_1 = recs.iloc[0]['junction'].replace('_', ' ')
-                    best_2 = recs.iloc[1]['junction'].replace('_', ' ')
-                    worst = recs.iloc[-1]['junction'].replace('_', ' ')
-                    st.success(f" **Primary Detour:** Route via **{best_1}** (Health Score: {recs.iloc[0]['health']:.2f})")
-                    st.success(f" **Secondary Detour:** Route via **{best_2}** (Health Score: {recs.iloc[1]['health']:.2f})")
-                    st.error(f" **Avoid:** Do not route via **{worst}** (Health Score: {recs.iloc[-1]['health']:.2f})")
-                elif len(recs) == 1:
-                    st.info(f" **Single Detour:** Route via **{recs.iloc[0]['junction'].replace('_', ' ')}**")
-                else:
-                    st.warning("No alternative routes found within the spatial constraints.")
+    save_col, diversion_col = st.columns(2)
 
-        # Display final JSON payload 
-        payload = {
-            "event_type": event_type,
-            "event_date": str(event_date),
-            "event_time": str(event_time),
-            "attendance": expected_attendance,
-            "event_location": all_nodes_dict[event_location]
-        }
-        st.success("Stationary Event submitted successfully.")
-        with st.expander("⚙️ View JSON Payload"):
-            st.json(payload)
+    with save_col:
+        if st.button("💾 Save Event", use_container_width=True):
+
+            payload = {
+                "id": datetime.now().strftime("%Y%m%d%H%M%S"),
+                "event_type": event_type,
+                "event_date": str(event_date),
+                "event_time": str(event_time),
+                "attendance": expected_attendance,
+                "event_location": all_nodes_dict[event_location],
+                "status": "planned"
+            }
+
+            save_event(payload)
+
+            st.success("✅ Event saved successfully.")
+
+    with diversion_col:
+        if st.button("🚧 Generate Diversion Plan",
+                    type="primary",
+                    use_container_width=True):
+
+            payload = {
+                "id": datetime.now().strftime("%Y%m%d%H%M%S"),
+                "event_type": event_type,
+                "event_date": str(event_date),
+                "event_time": str(event_time),
+                "attendance": expected_attendance,
+                "event_location": all_nodes_dict[event_location],
+                "status": "planned"
+            }
+
+            save_event(payload)
+            
+            st.subheader(" FlowGuard AI Recommendations")
+            with st.spinner("Calculating spatial diversions..."):
+                is_wknd = pd.to_datetime(event_date).dayofweek >= 5
+                hr_val = event_time.hour
+                
+                # Run Health Score Logic
+                recs = engine.get_single_point_diversions(event_location, hr_val, is_wknd)
+                
+                with st.container(border=True):
+                    if len(recs) >= 2:
+                        best_1 = recs.iloc[0]['junction'].replace('_', ' ')
+                        best_2 = recs.iloc[1]['junction'].replace('_', ' ')
+                        worst = recs.iloc[-1]['junction'].replace('_', ' ')
+                        st.success(f" **Primary Detour:** Route via **{best_1}** (Health Score: {recs.iloc[0]['health']:.2f})")
+                        st.success(f" **Secondary Detour:** Route via **{best_2}** (Health Score: {recs.iloc[1]['health']:.2f})")
+                        st.error(f" **Avoid:** Do not route via **{worst}** (Health Score: {recs.iloc[-1]['health']:.2f})")
+                    elif len(recs) == 1:
+                        st.info(f" **Single Detour:** Route via **{recs.iloc[0]['junction'].replace('_', ' ')}**")
+                    else:
+                        st.warning("No alternative routes found within the spatial constraints.")
+
+            st.success("Stationary Event submitted successfully.")
+            with st.expander("⚙️ View JSON Payload"):
+                st.json(payload)

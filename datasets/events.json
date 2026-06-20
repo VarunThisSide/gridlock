@@ -1,0 +1,57 @@
+[
+    {
+        "event_id": 1,
+        "event_name": "Delhi Marathon",
+        "event_type": "Marathon"
+    },
+    {
+        "event_id": 2,
+        "event_name": "Music Festival",
+        "event_type": "Concert"
+    },
+    {
+        "id": "20260620231649",
+        "event_type": "tree_fall",
+        "event_date": "2026-06-20",
+        "event_time": "23:16:00",
+        "attendance": 22,
+        "event_location": "AnepalyaJunc, Hosur Road, Central Zone 1",
+        "status": "planned"
+    },
+    {
+        "id": "20260620231755",
+        "event_type": "debris",
+        "event_date": "2026-06-20",
+        "event_time": "23:17:00",
+        "attendance": 0,
+        "event_location": "AnepalyaJunc, Hosur Road, Central Zone 1",
+        "status": "planned"
+    },
+    {
+        "id": "20260620233821",
+        "event_type": "debris",
+        "event_date": "2026-06-20",
+        "event_time": "23:38:00",
+        "attendance": 0,
+        "event_location": "AnepalyaJunc, Hosur Road, Central Zone 1",
+        "status": "planned"
+    },
+    {
+        "id": "20260620233822",
+        "event_type": "debris",
+        "event_date": "2026-06-20",
+        "event_time": "23:38:00",
+        "attendance": 0,
+        "event_location": "AnepalyaJunc, Hosur Road, Central Zone 1",
+        "status": "planned"
+    },
+    {
+        "id": "20260620233952",
+        "event_type": "tree_fall",
+        "event_date": "2026-06-20",
+        "event_time": "23:39:00",
+        "attendance": 0,
+        "event_location": "AnepalyaJunc, Hosur Road, Central Zone 1",
+        "status": "planned"
+    }
+]
